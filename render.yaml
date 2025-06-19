@@ -5,16 +5,4 @@ services:
     plan: free
     buildCommand: "pip install -r requirements.txt"
     startCommand: "python app.py"
-    autoDeploy: true
-    envVars:
-      - key: PIAPI_KEY
-        sync: false
-      - key: GPT4_KEY
-        sync: false
-      - key: SUNO_API_KEY
-        sync: false
-      - key: HF_API_KEY
-        sync: false
-      - key: TRELLIS_API_KEY
-        sync: false
 

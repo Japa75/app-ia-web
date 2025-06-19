@@ -1,6 +1,2 @@
 flask
-openai
-requests
-python-dotenv
-whisper
-pydub
+

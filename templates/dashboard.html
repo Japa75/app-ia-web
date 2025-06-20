@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><title>Dashboard</title></head>
+<body>
+  <h2>Bem-vindo, {{ user }}</h2>
+  <form method="POST" action="/generate">
+    Digite seu prompt: <input type="text" name="prompt">
+    <input type="submit" value="Gerar imagem">
+  </form>
+  {% if image_url %}
+    <h3>Resultado:</h3>
+    <img src="{{ image_url }}" width="300">
+  {% endif %}
+  <br><a href="/logout">Sair</a>
+</body>
+</html>

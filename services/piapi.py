@@ -1,26 +1,40 @@
+import os
 import requests
 
-# Chave de API da PIAPI
-PIAPI_KEY = "8e3d8fed2b1f01ff8d1eb8e6bfd09bdbc41ebc3d230e7306564f63a692668d86"
+# Carrega a chave da PIAPI de uma variável de ambiente
+PIAPI_KEY = os.getenv("PIAPI_KEY")
+
+# Endpoint da API PIAPI — atualize se for diferente!
+PIAPI_URL = "https://api.piapi.ai/generate"
 
 def generate_image(prompt):
-    headers = {"Authorization": f"Bearer {PIAPI_KEY}"}
-    payload = {"prompt": prompt}
+    if not PIAPI_KEY:
+        print("❌ ERRO: PIAPI_KEY não configurada!")
+        return None
+
+    headers = {
+        "Authorization": f"Bearer {PIAPI_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "prompt": prompt
+    }
 
     try:
-        response = requests.post("https://api.piapi.ai/generate", json=payload, headers=headers)
-        print("DEBUG status:", response.status_code)
-        print("DEBUG body:", response.text)
+        response = requests.post(PIAPI_URL, json=payload, headers=headers)
+        response.raise_for_status()  # dispara erro automático se status != 200
 
-        if response.status_code == 200:
-            result = response.json()
-            return result.get("image_url") or result.get("url") or result.get("image")
-        else:
-            print("Erro na resposta da PIAPI:", response.text)
-            return None
-    except Exception as e:
-        print("Erro na conexão com a PIAPI:", e)
+        data = response.json()
+        print("✅ Resposta da PIAPI:", data)
+
+        # Tente adaptar de acordo com a estrutura real retornada
+        return data.get("image_url") or data.get("url") or data.get("data", {}).get("image")
+
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Erro ao acessar PIAPI: {e}")
         return None
+
 
 
 

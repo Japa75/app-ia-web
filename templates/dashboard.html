@@ -1,16 +1,90 @@
 <!DOCTYPE html>
-<html>
-<head><title>Dashboard</title></head>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Dashboard - App IA</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f9fafb;
+    margin: 0;
+    padding: 20px;
+  }
+  header {
+    background-color: #007bff;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 6px;
+    margin-bottom: 30px;
+  }
+  h2 {
+    margin: 0;
+  }
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  form {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+  }
+  input[type="text"] {
+    flex-grow: 1;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  input[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  input[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+  .result img {
+    max-width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.1);
+  }
+  .logout-link {
+    text-align: right;
+    margin-top: 20px;
+  }
+  .logout-link a {
+    color: #dc3545;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  .logout-link a:hover {
+    text-decoration: underline;
+  }
+</style>
+</head>
 <body>
-  <h2>Bem-vindo, {{ user }}</h2>
-  <form method="POST" action="/generate">
-    Digite seu prompt: <input type="text" name="prompt">
-    <input type="submit" value="Gerar imagem">
-  </form>
-  {% if image_url %}
-    <h3>Resultado:</h3>
-    <img src="{{ image_url }}" width="300">
-  {% endif %}
-  <br><a href="/logout">Sair</a>
+  <header>
+    <h2>Bem-vindo, {{ user }}</h2>
+  </header>
+  <div class="container">
+    <form method="POST" action="/generate">
+      <input type="text" name="prompt" placeholder="Digite seu prompt para gerar imagem" required />
+      <input type="submit" value="Gerar imagem" />
+    </form>
+    {% if image_url %}
+      <div class="result">
+        <h3>Resultado:</h3>
+        <img src="{{ image_url }}" alt="Imagem gerada" />
+      </div>
+    {% endif %}
+    <div class="logout-link">
+      <a href="/logout">Sair</a>
+    </div>
+  </div>
 </body>
 </html>
+

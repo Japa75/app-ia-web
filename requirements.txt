@@ -1,5 +1,8 @@
 flask
 requests
 openai
+flask-login
+flask-sqlalchemy
 werkzeug
+
 

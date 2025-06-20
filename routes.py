@@ -1,50 +1,79 @@
-from flask import render_template, request, redirect, url_for, session
+from flask import render_template, request, redirect, url_for, flash
+from flask_login import login_user, login_required, logout_user, current_user
+from db import db, User
 from services.piapi import generate_image
 
-def register_routes(app):
+def register_routes(app, login_manager):
 
     @app.route("/")
     def index():
+        if current_user.is_authenticated:
+            return redirect(url_for("dashboard"))
         return redirect(url_for("login"))
+
+    @app.route("/register", methods=["GET", "POST"])
+    def register():
+        if request.method == "POST":
+            username = request.form.get("username")
+            password = request.form.get("password")
+
+            if User.query.filter_by(username=username).first():
+                flash("Usuário já existe!")
+                return redirect(url_for("register"))
+
+            new_user = User(username=username)
+            new_user.set_password(password)
+
+            db.session.add(new_user)
+            db.session.commit()
+
+            flash("Conta criada com sucesso! Faça login.")
+            return redirect(url_for("login"))
+
+        return render_template("register.html")
 
     @app.route("/login", methods=["GET", "POST"])
     def login():
         if request.method == "POST":
             username = request.form.get("username")
             password = request.form.get("password")
-            # Aqui você pode validar usuário no banco (placeholder)
-            if username == "admin" and password == "123":  # Exemplo simplificado
-                session["user"] = username
+
+            user = User.query.filter_by(username=username).first()
+            if user and user.check_password(password):
+                login_user(user)
                 return redirect(url_for("dashboard"))
             else:
-                return render_template("login.html", error="Usuário ou senha inválidos")
+                flash("Usuário ou senha inválidos!")
+                return redirect(url_for("login"))
+
         return render_template("login.html")
 
     @app.route("/dashboard")
+    @login_required
     def dashboard():
-        if "user" not in session:
-            return redirect(url_for("login"))
-        return render_template("dashboard.html", user=session["user"])
+        return render_template("dashboard.html", user=current_user)
 
     @app.route("/logout")
+    @login_required
     def logout():
-        session.pop("user", None)
+        logout_user()
         return redirect(url_for("login"))
 
     @app.route("/generate", methods=["POST"])
+    @login_required
     def generate():
-        if "user" not in session:
-            return redirect(url_for("login"))
-
         prompt = request.form.get("prompt")
         if not prompt:
-            return "Por favor, insira um prompt para gerar a imagem."
+            flash("Por favor, insira um prompt para gerar a imagem.")
+            return redirect(url_for("dashboard"))
 
         image_url = generate_image(prompt)
         if not image_url:
-            return "Erro ao gerar a imagem. Tente novamente."
+            flash("Erro ao gerar a imagem. Tente novamente.")
+            return redirect(url_for("dashboard"))
 
-        return render_template("dashboard.html", user=session["user"], image_url=image_url)
+        return render_template("dashboard.html", user=current_user, image_url=image_url)
+
 
 
       
